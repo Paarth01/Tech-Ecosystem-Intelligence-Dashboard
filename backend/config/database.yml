@@ -1,0 +1,17 @@
+# SQLite by default. Set DATABASE_URL (e.g. postgres://user:pass@localhost/techintel)
+# and add the "pg" gem to use PostgreSQL. See README.
+default: &default
+  adapter: sqlite3
+  timeout: 5000
+
+development:
+  <<: *default
+  database: db/development.sqlite3
+
+test:
+  <<: *default
+  database: db/test.sqlite3
+
+production:
+  <<: *default
+  database: db/production.sqlite3

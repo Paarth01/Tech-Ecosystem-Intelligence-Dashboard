@@ -1,0 +1,8 @@
+.git
+**/node_modules
+backend/log
+backend/tmp
+backend/db/*.sqlite3*
+backend/backups
+backend/public
+.env*

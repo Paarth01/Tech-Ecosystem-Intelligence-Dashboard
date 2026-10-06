@@ -1,0 +1,13 @@
+# Opens pull requests when new versions come out. Rails and Gemini models retire quickly,
+# so staying current matters.
+version: 2
+updates:
+  - package-ecosystem: bundler
+    directory: /backend
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule: { interval: weekly }
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: monthly }

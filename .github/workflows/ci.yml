@@ -1,0 +1,41 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.4"
+      # Gemfile.lock must be committed (run `bundle install` once and commit it): without it every
+      # build resolves new gem versions and nothing can be audited.
+      - name: Gemfile.lock is committed
+        run: test -f Gemfile.lock
+      - run: bundle install
+      - run: RAILS_ENV=test bin/rails db:create db:migrate
+      - run: bin/rails test
+      - name: Static security scan
+        run: bundle exec brakeman --no-pager --quiet
+      - name: Known vulnerable gems
+        run: bundle exec bundle-audit check --update
+
+  frontend:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+      - run: npm ci
+      - run: npm audit --audit-level=high
+      - run: npm test
+      - run: npm run build
