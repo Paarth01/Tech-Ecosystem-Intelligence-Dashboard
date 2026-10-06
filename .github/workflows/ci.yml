@@ -18,8 +18,8 @@ jobs:
       - name: Gemfile.lock is committed
         run: test -f Gemfile.lock
       - run: bundle install
-      - run: RAILS_ENV=test bin/rails db:create db:migrate
-      - run: bin/rails test
+      - run: RAILS_ENV=test bundle exec rails db:create db:migrate
+      - run: bundle exec rails test
       - name: Static security scan
         run: bundle exec brakeman --no-pager --quiet
       - name: Known vulnerable gems

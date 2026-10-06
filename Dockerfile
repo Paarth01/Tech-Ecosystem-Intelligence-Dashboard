@@ -28,4 +28,4 @@ VOLUME ["/app/backend/db", "/app/backend/tmp", "/app/backend/backups"]
 EXPOSE 3000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s CMD curl -fsS http://localhost:3000/up || exit 1
 # Required environment: SECRET_KEY_BASE, APP_URL, SMTP_ADDRESS (or ALLOW_NO_EMAIL=true). See README.
-CMD ["sh", "-c", "bin/rails db:prepare && bin/rails server -b 0.0.0.0"]
+CMD ["sh", "-c", "bundle exec rails db:prepare && bundle exec rails server -b 0.0.0.0"]
