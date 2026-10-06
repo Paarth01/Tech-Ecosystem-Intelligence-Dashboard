@@ -48,7 +48,9 @@ class TrendHistoryTest < ActiveSupport::TestCase
     item = { id: "1", title: "Rust DB", url: "https://e.com/1", source: "GitHub", description: "d", meta: "m", tags: ["Rust"], engagement: 10 }
     seed(25.hours.ago, "rust" => 1.0)
 
-    with_sources("github" => -> { [item.dup] }) do
+    # Snapshots are only taken when every source answered, so all five answer here.
+    all_up = TrendFetcher::SOURCES.to_h { |s| [s, -> { [item.merge(id: s, url: "https://e.com/#{s}")] }] }
+    with_sources(all_up) do
       data = TrendFetcher.dashboard
       assert_equal "up", data[:topics].first.dig(:trend, :label)
       TrendFetcher.dashboard(force: true)

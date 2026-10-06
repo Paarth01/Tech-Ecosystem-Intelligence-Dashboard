@@ -56,6 +56,17 @@ class TrendFetcherTest < ActiveSupport::TestCase
       assert_not_includes data[:unavailable], "github"
     end
   end
+
+  test "no snapshot is saved while a source is down, so topics don't look like they fell" do
+    stub_sources("github" => -> { [GOOD.dup] }) do      # the other four sources return nothing
+      TrendFetcher.dashboard
+    end
+    assert_equal 0, TrendSnapshot.count
+
+    all_up = TrendFetcher::SOURCES.to_h { |s| [s, -> { [GOOD.merge(id: s, url: "https://e.com/#{s}")] }] }
+    stub_sources(all_up) { TrendFetcher.dashboard(force: true) }
+    assert TrendSnapshot.count.positive?
+  end
 end
 
 class IdeaSearcherTest < ActiveSupport::TestCase
@@ -80,16 +91,5 @@ class IdeaSearcherTest < ActiveSupport::TestCase
         end
       end
     end
-  end
-
-  test "no snapshot is saved while a source is down, so topics don't look like they fell" do
-    stub_sources("github" => -> { [GOOD.dup] }) do      # the other four sources return nothing
-      TrendFetcher.dashboard
-    end
-    assert_equal 0, TrendSnapshot.count
-
-    all_up = TrendFetcher::SOURCES.to_h { |s| [s, -> { [GOOD.merge(id: s, url: "https://e.com/#{s}")] }] }
-    stub_sources(all_up) { TrendFetcher.dashboard(force: true) }
-    assert TrendSnapshot.count.positive?
   end
 end
